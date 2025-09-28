@@ -27,7 +27,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; }
         .container { max-width: 95%; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; padding: 20px 0; border-bottom: 2px solid var(--border-color); }
+        .header { position: relative; text-align: center; margin-bottom: 30px; padding: 20px 0; border-bottom: 2px solid var(--border-color); }
         .header h1 { font-size: 2.5rem; color: var(--primary-blue); margin-bottom: 10px; }
         .header p { color: var(--text-secondary); font-size: 1.1rem; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 24px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
@@ -553,7 +553,11 @@
             };
             return (
                 <div className="container">
-                    <div className="header"><h1>TallyBridge</h1><p>Powerful Bank Statement Clearance Tool for Tally</p></div>
+                    <div className="header">
+                        <h1>TallyBridge</h1>
+                        <p>Powerful Bank Statement Clearance Tool for Tally</p>
+                        <a href="./Documentation.html" className="btn" style={{position: 'absolute', top: '28px', right: '20px'}}>Documentation</a>
+                    </div>
                     {pageComponents[currentPage]}
                     {isCompanyModalOpen && (
                         <CompanyNameModal

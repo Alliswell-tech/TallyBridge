@@ -581,7 +581,7 @@
                 <div className="dashboard-grid">
                     <div className="card">
                         <h3 style={{ marginBottom: '20px', color: 'var(--primary-blue)' }}>Start New Bank Statement Import</h3>
-                        <p style={{ marginBottom: '20px', color: 'var(--text-secondary)' }}>Begin a new bank Statement clearance process by importing your Tally Master ledgers and Bank Statement.</p>
+                        <p style={{ marginBottom: '20px', color: 'var(--text-secondary)' }}>Begin a New Bank Statement clearance process by importing your Tally Master ledgers and Bank Statement.</p>
                         <button className="btn btn-success" onClick={onStartNew}>Start with New Bank Statement</button>
                     </div>
                     <div className="card">
@@ -949,30 +949,21 @@
                 return processedTransactions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
             }, [processedTransactions, currentPage]);
             
-            const toggleSelectAll = () => {
-                const allVisibleIds = new Set(paginatedTransactions.map(t => t.id));
-                const currentSelection = new Set(selectedRows);
-                
-                let allSelectedOnPage = true;
-                for(const id of allVisibleIds) {
-                    if (!currentSelection.has(id)) {
-                        allSelectedOnPage = false;
-                        break;
-                    }
-                }
-
-                if (allSelectedOnPage) {
-                    allVisibleIds.forEach(id => currentSelection.delete(id));
-                } else {
-                    allVisibleIds.forEach(id => currentSelection.add(id));
-                }
-                setSelectedRows(currentSelection);
+            const areAllFilteredSelected = () => {
+                if (processedTransactions.length === 0) return false;
+                // Robust check: ensures every currently filtered transaction is in the selection set.
+                return processedTransactions.every(t => selectedRows.has(t.id));
             };
-            
-            const isPageAllSelected = () => {
-                 const pageIds = new Set(paginatedTransactions.map(t => t.id));
-                 if (pageIds.size === 0) return false;
-                 return Array.from(pageIds).every(id => selectedRows.has(id));
+
+            const toggleSelectAll = () => {
+                // If all filtered transactions are already selected, clear the selection.
+                if (areAllFilteredSelected()) {
+                    setSelectedRows(new Set());
+                } else {
+                    // Otherwise, select all (and only) the currently filtered transactions.
+                    const allFilteredIds = new Set(processedTransactions.map(t => t.id));
+                    setSelectedRows(allFilteredIds);
+                }
             };
 
             if (loading) return <div>Loading transactions...</div>;
@@ -1019,7 +1010,7 @@
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <th><input type="checkbox" onChange={toggleSelectAll} checked={isPageAllSelected()} /></th>
+                                    <th><input type="checkbox" onChange={toggleSelectAll} checked={areAllFilteredSelected()} /></th>
                                     <th className="sortable" onClick={() => requestSort('date')}>Date</th>
                                     <th>Particulars</th>
                                     <th className="sortable" onClick={() => requestSort('debit')}>Debit</th>
@@ -1165,25 +1156,22 @@
                 return processedTransactions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
             }, [processedTransactions, currentPage]);
 
+            const areAllFilteredSelected = () => {
+                if (processedTransactions.length === 0) return false;
+                // Robust check: ensures every currently filtered transaction is in the selection set.
+                return processedTransactions.every(t => selectedTransactions.has(t.id));
+            };
+
             const toggleSelectAll = () => {
-                 const pageIds = new Set(paginatedTransactions.map(t => t.id));
-                 const currentSelection = new Set(selectedTransactions);
-                 const allOnPageSelected = Array.from(pageIds).every(id => currentSelection.has(id));
-
-                 if (allOnPageSelected) {
-                     pageIds.forEach(id => currentSelection.delete(id));
-                 } else {
-                     pageIds.forEach(id => currentSelection.add(id));
-                 }
-                 setSelectedTransactions(currentSelection);
+                // If all filtered transactions are already selected, clear the selection.
+                if (areAllFilteredSelected()) {
+                    setSelectedTransactions(new Set());
+                } else {
+                    // Otherwise, select all (and only) the currently filtered transactions.
+                    const allFilteredIds = new Set(processedTransactions.map(t => t.id));
+                    setSelectedTransactions(allFilteredIds);
+                }
             };
-            
-            const isPageAllSelected = () => {
-                 const pageIds = new Set(paginatedTransactions.map(t => t.id));
-                 if (pageIds.size === 0) return false;
-                 return Array.from(pageIds).every(id => selectedTransactions.has(id));
-            };
-
 
             return (
                 <div>
@@ -1221,7 +1209,7 @@
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <th><input type="checkbox" onChange={toggleSelectAll} checked={isPageAllSelected()} /></th>
+                                    <th><input type="checkbox" onChange={toggleSelectAll} checked={areAllFilteredSelected()} /></th>
                                     <th>Date</th>
                                     <th>Debit Ledger</th>
                                     <th>Credit Ledger</th>
